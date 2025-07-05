@@ -7,25 +7,19 @@ import MovieListHeading from './components/MovieListHeading';
 import RemoveFavourites from './components/RemoveFavourites';
 import SearchBox from './components/SearchBox';
 
+// ✅ Securely access your API key from environment variable
+const apiKey = process.env.REACT_APP_TMDB_API_KEY;
+
 const App = () => {
 	const [movies, setMovies] = useState([]);
 	const [favourites, setFavourites] = useState([]);
 	const [searchValue, setSearchValue] = useState('');
 
-	const TMDB_HEADERS = {
-		method: 'GET',
-		headers: {
-			accept: 'application/json',
-			Authorization:
-				'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5NWU5MjgzMGY0ZGQ2ZTVkNTJkYmFkMjFjZWMxYjkxMCIsIm5iZiI6MTc1MTcwODcxOS40MjksInN1YiI6IjY4NjhmNDJmMzI3YTA1MmVhNDUzZjQwMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.lDPv1d6cgiVd11f-hT_2pKKduxrQqTxvbcA25v0LLKc',
-		},
-	};
-
 	const getFullMovieDetails = async (movieId) => {
-		const url = `https://api.themoviedb.org/3/movie/${movieId}?append_to_response=credits`;
+		const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}&append_to_response=credits`;
 
 		try {
-			const response = await fetch(url, TMDB_HEADERS);
+			const response = await fetch(url);
 			const data = await response.json();
 
 			const director = data.credits.crew.find((c) => c.job === "Director")?.name;
@@ -45,10 +39,10 @@ const App = () => {
 	};
 
 	const getMovieRequest = async (searchValue) => {
-		const url = `https://api.themoviedb.org/3/search/movie?query=${searchValue}`;
+		const url = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${searchValue}`;
 
 		try {
-			const response = await fetch(url, TMDB_HEADERS);
+			const response = await fetch(url);
 			const data = await response.json();
 
 			if (data.results) {
@@ -145,4 +139,3 @@ const App = () => {
 };
 
 export default App;
-
