@@ -7,13 +7,12 @@ import MovieListHeading from './components/MovieListHeading';
 import RemoveFavourites from './components/RemoveFavourites';
 import SearchBox from './components/SearchBox';
 
-// ✅ Securely access your API key from environment variable
-const apiKey = process.env.REACT_APP_TMDB_API_KEY;
-
 const App = () => {
 	const [movies, setMovies] = useState([]);
 	const [favourites, setFavourites] = useState([]);
 	const [searchValue, setSearchValue] = useState('');
+
+	const apiKey = process.env.REACT_APP_TMDB_API_KEY || '95e92830f4dd6e5d52dbad21cec1b910';
 
 	const getFullMovieDetails = async (movieId) => {
 		const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}&append_to_response=credits`;
@@ -21,6 +20,10 @@ const App = () => {
 		try {
 			const response = await fetch(url);
 			const data = await response.json();
+
+			if (data.success === false) {
+				throw new Error(data.status_message);
+			}
 
 			const director = data.credits.crew.find((c) => c.job === "Director")?.name;
 			const topCast = data.credits.cast.slice(0, 5).map((c) => c.name).join(", ");
@@ -44,6 +47,10 @@ const App = () => {
 		try {
 			const response = await fetch(url);
 			const data = await response.json();
+
+			if (data.success === false) {
+				throw new Error(data.status_message);
+			}
 
 			if (data.results) {
 				const mappedMovies = await Promise.all(
@@ -84,9 +91,7 @@ const App = () => {
 	}, [searchValue]);
 
 	useEffect(() => {
-		const movieFavourites = JSON.parse(
-			localStorage.getItem('react-movie-app-favourites')
-		);
+		const movieFavourites = JSON.parse(localStorage.getItem('react-movie-app-favourites'));
 		if (movieFavourites) {
 			setFavourites(movieFavourites);
 		}
@@ -106,7 +111,6 @@ const App = () => {
 		const newFavouriteList = favourites.filter(
 			(favourite) => favourite.imdbID !== movie.imdbID
 		);
-
 		setFavourites(newFavouriteList);
 		saveToLocalStorage(newFavouriteList);
 	};
