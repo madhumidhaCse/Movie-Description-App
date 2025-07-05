@@ -12,11 +12,20 @@ const App = () => {
 	const [favourites, setFavourites] = useState([]);
 	const [searchValue, setSearchValue] = useState('');
 
+	const TMDB_HEADERS = {
+		method: 'GET',
+		headers: {
+			accept: 'application/json',
+			Authorization:
+				'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5NWU5MjgzMGY0ZGQ2ZTVkNTJkYmFkMjFjZWMxYjkxMCIsIm5iZiI6MTc1MTcwODcxOS40MjksInN1YiI6IjY4NjhmNDJmMzI3YTA1MmVhNDUzZjQwMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.lDPv1d6cgiVd11f-hT_2pKKduxrQqTxvbcA25v0LLKc',
+		},
+	};
+
 	const getFullMovieDetails = async (movieId) => {
-		const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=eccc01dae6fffc3ad5382fc33b03f597&append_to_response=credits`;
+		const url = `https://api.themoviedb.org/3/movie/${movieId}?append_to_response=credits`;
 
 		try {
-			const response = await fetch(url);
+			const response = await fetch(url, TMDB_HEADERS);
 			const data = await response.json();
 
 			const director = data.credits.crew.find((c) => c.job === "Director")?.name;
@@ -36,10 +45,10 @@ const App = () => {
 	};
 
 	const getMovieRequest = async (searchValue) => {
-		const url = `https://api.themoviedb.org/3/search/movie?api_key=eccc01dae6fffc3ad5382fc33b03f597&query=${searchValue}`;
+		const url = `https://api.themoviedb.org/3/search/movie?query=${searchValue}`;
 
 		try {
-			const response = await fetch(url);
+			const response = await fetch(url, TMDB_HEADERS);
 			const data = await response.json();
 
 			if (data.results) {
@@ -119,7 +128,7 @@ const App = () => {
 					movies={movies}
 					handleFavouritesClick={addFavouriteMovie}
 					favouriteComponent={AddFavourites}
-				/>4az
+				/>
 			</div>
 			<div className='row d-flex align-items-center mt-4 mb-4'>
 				<MovieListHeading heading='Favourites' />
@@ -136,3 +145,4 @@ const App = () => {
 };
 
 export default App;
+
